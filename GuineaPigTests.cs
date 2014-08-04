@@ -31,10 +31,10 @@ namespace SauceLabs.SeleniumExamples
         private void _Setup(string browser, string version, string platform)
         {
             // construct the url to sauce labs
-            Uri commandExecutorUri = new Uri("http://ondemand.saucelabs.com/wd/hub");
+            var commandExecutorUri = new Uri("http://ondemand.saucelabs.com/wd/hub");
 
             // set up the desired capabilities
-            DesiredCapabilities desiredCapabilites = new DesiredCapabilities(browser, version, Platform.CurrentPlatform); // set the desired browser
+            var desiredCapabilites = new DesiredCapabilities(browser, version, Platform.CurrentPlatform); // set the desired browser
             desiredCapabilites.SetCapability("platform", platform); // operating system to use
             desiredCapabilites.SetCapability("username", Constants.SAUCE_LABS_ACCOUNT_NAME); // supply sauce labs username
             desiredCapabilites.SetCapability("accessKey", Constants.SAUCE_LABS_ACCOUNT_KEY);  // supply sauce labs account key
@@ -95,8 +95,8 @@ namespace SauceLabs.SeleniumExamples
             link.Click();
 
             // wait for the page to change
-            WebDriverWait wait = new WebDriverWait(_Driver, TimeSpan.FromSeconds(30));
-            wait.Until((d) => { return d.Url.Contains("guinea-pig2"); });
+            var wait = new WebDriverWait(_Driver, TimeSpan.FromSeconds(30));
+            wait.Until(d => d.Url.Contains("guinea-pig2"));
 
             // verify the browser was navigated to the correct page
             Assert.Contains(_Driver.Url, "saucelabs.com/test-guinea-pig2.html");
