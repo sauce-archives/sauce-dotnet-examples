@@ -1,4 +1,4 @@
-﻿using Gallio.Framework;
+using Gallio.Framework;
 using Gallio.Model;
 using MbUnit.Framework;
 using OpenQA.Selenium;
@@ -15,20 +15,13 @@ namespace SauceLabs.SeleniumExamples
     [Row("chrome", "31", "Windows 7")] // run all tests in the fixture against chrome 31 for windows 7
     public class GuineaPigTests
     {
-        #region Private Properties
-
-        /// <summary>selenium webdriver interface</summary>
-        private IWebDriver _Driver;
-
-        #endregion
-
         #region Setup and Teardown
 
         /// <summary>starts a sauce labs sessions</summary>
         /// <param name="browser">name of the browser to request</param>
         /// <param name="version">version of the browser to request</param>
         /// <param name="platform">operating system to request</param>
-        private void _Setup(string browser, string version, string platform)
+        private IWebDriver _Setup(string browser, string version, string platform)
         {
             // construct the url to sauce labs
             Uri commandExecutorUri = new Uri("http://ondemand.saucelabs.com/wd/hub");
@@ -41,18 +34,19 @@ namespace SauceLabs.SeleniumExamples
             desiredCapabilites.SetCapability("name", TestContext.CurrentContext.Test.Name); // give the test a name
 
             // start a new remote web driver session on sauce labs
-            _Driver = new RemoteWebDriver(commandExecutorUri, desiredCapabilites);
+            var _Driver = new RemoteWebDriver(commandExecutorUri, desiredCapabilites);
             _Driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(30));
             _Driver.Manage().Timeouts().SetPageLoadTimeout(TimeSpan.FromSeconds(30));
 
             // navigate to the page under test
             _Driver.Navigate().GoToUrl("https://saucelabs.com/test/guinea-pig");
+
+            return _Driver;
         }
 
 
         /// <summary>called at the end of each test to tear it down</summary>
-        [TearDown] // denotes that this will be called at the end of each test method
-        public void CleanUp()
+        public void CleanUp(IWebDriver _Driver)
         {
             // get the status of the current test
             bool passed = TestContext.CurrentContext.Outcome.Status == TestStatus.Passed;
@@ -73,22 +67,24 @@ namespace SauceLabs.SeleniumExamples
         #region Tests
 
         /// <summary>tests the title of the page</summary>
-        [Parallelizable, Test] // denotes that this method is a test and can be run in parallel
+        [Test, Parallelizable] // denotes that this method is a test and can be run in parallel
         public void PageTitle(string browser, string version, string platform)
         {
             // start the remote webdriver session with sauce labs
-            _Setup(browser, version, platform);
+            var _Driver = _Setup(browser, version, platform);
 
             // verify the page title is correct
             Assert.Contains(_Driver.Title, "I am a page title - Sauce Labs");
+
+            CleanUp(_Driver);
         }
 
         /// <summary>tests that the link works on the page</summary>
-        [Parallelizable, Test] // denotes that this method is a test and can be run in parallel
+        [Test, Parallelizable] // denotes that this method is a test and can be run in parallel
         public void LinkWorks(string browser, string version, string platform)
         {
             // start the remote webdriver session with sauce labs
-            _Setup(browser, version, platform);
+            var _Driver = _Setup(browser, version, platform);
 
             // find and click the link on the page
             var link = _Driver.FindElement(By.Id("i am a link"));
@@ -100,19 +96,23 @@ namespace SauceLabs.SeleniumExamples
 
             // verify the browser was navigated to the correct page
             Assert.Contains(_Driver.Url, "saucelabs.com/test-guinea-pig2.html");
+
+            CleanUp(_Driver);
         }
 
         /// <summary>tests that a useragent element is present on the page</summary>
-        [Parallelizable, Test] // denotes that this method is a test and can be run in parallel
+        [Test, Parallelizable] // denotes that this method is a test and can be run in parallel
         public void UserAgentPresent(string browser, string version, string platform)
         {
             // start the remote webdriver session with sauce labs
-            _Setup(browser, version, platform);
+            var _Driver = _Setup(browser, version, platform);
 
             // read the useragent string off the page
             var useragent = _Driver.FindElement(By.Id("useragent")).Text;
 
             Assert.IsNotNull(useragent);
+
+            CleanUp(_Driver);
         }
 
         #endregion
