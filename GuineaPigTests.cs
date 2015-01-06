@@ -11,8 +11,9 @@ namespace SauceLabs.SeleniumExamples
     /// <summary>tests for the sauce labs guinea pig page</summary>
     [TestFixture]
     [Header("browser", "version", "platform")] // name of the parameters in the rows
-    [Row("firefox", "25", "Windows 7")] // run all tests in the fixture against firefox 25 for windows 7
-    [Row("chrome", "31", "Windows 7")] // run all tests in the fixture against chrome 31 for windows 7
+    [Row("internet explorer", "11", "Windows 7")] // run all tests in the fixture against IE 11 for windows 7
+    [Row("chrome", "35", "linux")] // run all tests in the fixture against chrome 35 for linux
+    [Row("safari","6","OS X 10.8")] // run all tests in the fixture against safari 6 and mac OS X 10.8
     public class GuineaPigTests
     {
         #region Setup and Teardown
@@ -36,7 +37,6 @@ namespace SauceLabs.SeleniumExamples
             // start a new remote web driver session on sauce labs
             var _Driver = new RemoteWebDriver(commandExecutorUri, desiredCapabilites);
             _Driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(30));
-            _Driver.Manage().Timeouts().SetPageLoadTimeout(TimeSpan.FromSeconds(30));
 
             // navigate to the page under test
             _Driver.Navigate().GoToUrl("https://saucelabs.com/test/guinea-pig");
